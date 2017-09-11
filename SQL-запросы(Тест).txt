@@ -1,0 +1,49 @@
+---------------------------------------Задание----------------------------------------
+В бд есть две таблички:
+1. Customer
+Id	|Name 
+------------------
+1	|Ivanov
+2	|Petrov
+3	|Sidorov
+
+2. CustomerInfo
+Id	|Field		|Value
+----------------------------------------
+1	|FirstName	|Ivan
+1	|Phone		|+7-903-1234567
+2	|FirstName	|Peter
+2	|Phone		|+7-903-2222222
+3	|FirstName	|Sidor
+
+Таблички связаны по полю Id
+
+Требуется написать SQL-запрос, возвращающий следующий резултат
+
+ID	|FirstName	|Name	|Phone
+-----------------------------------------------
+1	|Ivan		|Ivanov	|+7-903-1234567
+2	|Peter		|Petrov	|+7-903-2222222
+3	|Sidor		|Sidorov| 
+
+
+---------------------------------------Решение----------------------------------------
+/*Первый способо SQL-запроса. Данный способ подразумевает, использование так называемые вложенные запросы (SELECT)*/
+SELECT cust.Id AS "ID",
+	(
+	  SELECT Value
+	  FROM CustomerInfo cust1
+	  WHERE cust1.Id = cust.Id AND cust1.Field = 'FirstName'
+	) AS "FirstName", cust.Name,
+	(
+	  SELECT Value
+	  FROM CustomerInfo cust1
+	  WHERE cust1.Id = cust.Id AND cust1.Field = 'Phone'
+	)AS "Phone"
+FROM Customer cust;
+
+/*Второй способо SQL-запроса. Данный способ подразумевает, использование оператор внутреннего соединения (INNER JOIN)*/
+SELECT cust.Id AS "ID", cust1.Value AS "FirstName", cust.name, cust2.Value AS "Phone"
+FROM Customer cust
+INNER JOIN CustomerInfo cust1 ON cust1.Id = cust.Id AND cust1.Field = 'FirstName'
+INNER JOIN CustomerInfo cust2 ON cust2.Id = cust.Id AND cust2.Field = 'Phone';
